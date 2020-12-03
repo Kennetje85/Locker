@@ -1,0 +1,143 @@
+const int button1 = 7; //Eerste button 
+const int button2 = 6; //Tweede button 
+const int button3 = 5; //Derde button
+
+
+const int ledred = 12; //red led is on pin 12
+const int ledgreen = 13; // green led is on pin 13
+void checkEnter1(int button);
+
+int code[] = {2,3,3,1}; //4-cijferige pincode in een array vastgelegd
+
+int entered[4]; //create a new empty array 
+
+void setup(){
+ Serial.begin(9600);
+ pinMode(button1, INPUT_PULLUP); 
+ pinMode(button2, INPUT_PULLUP); 
+ pinMode(button3, INPUT_PULLUP); 
+  
+ pinMode(ledred, OUTPUT);
+ pinMode(ledgreen, OUTPUT);
+ Serial.println("Voer pincode in:");
+ digitalWrite(ledred, HIGH);
+
+  }
+ 
+
+
+
+void loop(){
+  if(digitalRead(button1) == LOW){   //if button1 is pressed
+    checkEnter1(1); // pass it 1 
+    delay(250);
+  }
+  else if(digitalRead(button2) == LOW){   //if button2 is pressed
+    checkEnter1(2);  //pass it 2
+    delay(250);  
+  
+}
+  
+  else if (digitalRead(button3) == LOW){ //if button3 is pressed
+    checkEnter1(3); //call checkEntered1 and pass it a 3
+    delay(250); //wait
+  
+  }
+}
+
+
+
+void checkEnter1(int button){ //check the first element of the entered[] array
+  if (entered[0] != 0){ //if it is not a zero, i.e. it has already been inputted
+    checkEnter2(button); //ga naar checkEnter2, passing it "button"
+    
+  }
+
+  else if(entered[0] == 0){ //if it is zero, i.e. if it hasn't been defined with a button yet
+    entered[0] = button; //set the first element as the button that has been pressed
+    Serial.print("1: ");Serial.println(entered[0]); //for debugging
+  }
+  
+}
+
+void checkEnter2(int button){ //check the second element of the entered[] array
+  if (entered[1] != 0){ //if it is not a zero, i.e. it has already been inputted
+    checkEnter3(button); //ga naar checkEnter3, passing it "button"
+  }
+  
+  else if(entered[1] == 0){ //if it is zero, i.e. if it hasn't been defined with a button yet
+    entered[1] = button; //set the second element as the button that has been pressed
+    Serial.print("2: ");Serial.println(entered[1]); //for debugging
+  }
+  
+}
+
+
+
+void checkEnter3(int button){ 
+  if (entered[2] != 0){ //if it is not a zero, i.e. it has already been inputted
+    checkEnter4(button); //ga naar checkEnter4, passing it "button"
+  }
+  
+  else if(entered[2] == 0){
+    entered[2] = button; //set the second element as the button that has been pressed
+    Serial.print("3: ");Serial.println(entered[1]); //for debugging
+  }
+  
+}
+
+
+void checkEnter4(int button){  
+    if (entered[3] == 0){ //if it is zero, i.e. if it hasn't been defined with a button yet
+    entered[3] = button; //set the final element as the button that has been pressed
+    Serial.print("4: ");Serial.println(entered[3]); //for debugging
+    Serial.println("Pincode is ingevoerd.... checking.. ");
+    delay(1000); //allow time for processing
+    compareCode(); //roep de functie comparecode aan 
+  
+}
+}
+
+
+void compareCode(){ //checks if the code entered is correct by comparing the code[] array with the entered[] array
+  for (int i = 0; i<4;i++){ //these three lines are for debugging
+    Serial.println(entered[i]);
+  }
+  if ((entered[0]==code[0]) && (entered[1]==code[1]) && (entered[2]==code[2]) && (entered[3]==code[3])){ //kijken of de elementen gelijk zijn
+    digitalWrite(ledred, LOW); // turn the red LED off
+    digitalWrite(ledgreen, HIGH); //turn the green LED on
+    delay(1000); //
+    digitalWrite(ledgreen, LOW); //turn the green LED off
+    Serial.println("De kluis is open");
+    delay(1000); //wait for a bit
+   // digitalWrite(ledgreen, LOW); //turn the green LED off
+   
+    
+    for (int i = 0; i < 4; i++){ //deze loop is voor debugging
+      entered[i] = 0;
+      
+    }
+   
+    loop(); //return to loop() 
+  }
+  
+  else { //get the code wrong
+    
+    digitalWrite(ledred,HIGH); // laten knipperen
+    delay(1000);
+    digitalWrite(ledred,LOW);
+    delay(1000);
+    digitalWrite(ledred,HIGH);
+    delay(1000);
+    digitalWrite(ledred,LOW);
+    digitalWrite(ledred,HIGH);
+    delay(1000);
+    digitalWrite(ledred,LOW);
+    Serial.println("Code onjuist");
+     for (int i = 0; i < 4; i++){ //this next loop is for debugging
+      entered[i] = 0;
+      
+    }
+    setup(); //terug naar setup() 
+  }
+}
